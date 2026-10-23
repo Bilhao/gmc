@@ -94,264 +94,262 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------------------
-# Master CSS - Design Dark Executivo (plataforma_gestao_gmc.html)
+# Gestão de Tema (Modo Escuro / Modo Claro Dinâmico)
 # ----------------------------------------------------------------------------------------
-st.markdown("""
-<style>
-    /* 1. Base Dark Theme */
+if "theme_radio" in st.session_state:
+    is_dark = "Escuro" in st.session_state["theme_radio"]
+    st.session_state["theme"] = "Escuro" if is_dark else "Claro"
+else:
+    is_dark = st.session_state.get("theme", "Escuro") == "Escuro"
+
+if is_dark:
+    theme_css = """
+    :root {
+        --bg-main: #090d16;
+        --bg-sidebar: #0f172a;
+        --bg-card: #0f172a;
+        --bg-card-subtle: #090d16;
+        --border-color: #1e293b;
+        --border-hover: #334155;
+        --text-title: #ffffff;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --text-sub: #cbd5e1;
+        --gauge-track: #1e293b;
+        --input-bg: #0b1120;
+        --input-border: #334155;
+    }
     .stApp {
         background-color: #090d16 !important;
         color: #f8fafc !important;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
-
-    /* 2. Sidebar Styling */
     section[data-testid="stSidebar"] {
         background-color: #0f172a !important;
         border-right: 1px solid #1e293b !important;
     }
-    section[data-testid="stSidebar"] div[data-testid="stRadio"] > label {
-        color: #94a3b8 !important;
-        font-size: 0.72rem !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.5px !important;
-    }
-    section[data-testid="stSidebar"] div[data-testid="stRadio"] label span {
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] p {
         color: #cbd5e1 !important;
-        font-size: 0.82rem !important;
-        font-weight: 500 !important;
     }
-
-    /* 3. Top Header Bar */
     header[data-testid="stHeader"] {
         background-color: rgba(15, 23, 42, 0.75) !important;
         backdrop-filter: blur(8px) !important;
         border-bottom: 1px solid #1e293b !important;
     }
-
-    /* 4. Executive KPI Card Component */
-    .kpi-card {
-        background-color: #0f172a;
-        border: 1px solid #1e293b;
+    .kpi-card, .gauge-card {
+        background-color: #0f172a !important;
+        border: 1px solid #1e293b !important;
         border-radius: 12px;
         padding: 16px 18px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
         margin-bottom: 12px;
-        transition: transform 0.15s ease, border-color 0.15s ease;
+        color: #f8fafc !important;
     }
-    .kpi-card:hover {
-        border-color: #334155;
-        transform: translateY(-1px);
+    .kpi-card:hover, .gauge-card:hover {
+        border-color: #334155 !important;
     }
-    .kpi-header {
+    .kpi-header, .gauge-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 6px;
     }
-    .kpi-label {
+    .kpi-label, .gauge-title {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #94a3b8;
+        color: #94a3b8 !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    .badge-pill {
-        font-size: 0.68rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 4px;
-        display: inline-block;
-    }
-    .badge-green { background-color: #052e16; color: #34d399; border: 1px solid #166534; }
-    .badge-blue { background-color: #172554; color: #60a5fa; border: 1px solid #1e40af; }
-    .badge-purple { background-color: #3b0764; color: #c084fc; border: 1px solid #6b21a8; }
-    .badge-amber { background-color: #451a03; color: #fbbf24; border: 1px solid #92400e; }
-    .badge-red { background-color: #450a0a; color: #f87171; border: 1px solid #991b1b; }
+    .kpi-val-green { font-size: 1.85rem; font-weight: 800; color: #34d399 !important; line-height: 1.2; }
+    .kpi-val-white { font-size: 1.85rem; font-weight: 800; color: #ffffff !important; line-height: 1.2; }
+    .kpi-val-purple { font-size: 1.85rem; font-weight: 800; color: #c084fc !important; line-height: 1.2; }
+    .kpi-val-amber { font-size: 1.85rem; font-weight: 800; color: #fbbf24 !important; line-height: 1.2; }
+    .kpi-val-blue { font-size: 1.85rem; font-weight: 800; color: #60a5fa !important; line-height: 1.2; }
+    .gauge-value { font-size: 1.45rem; font-weight: 800; color: #ffffff !important; margin-top: 4px; }
+    .kpi-sub, .gauge-sub { font-size: 0.74rem; color: #94a3b8 !important; margin-top: 4px; }
 
-    .kpi-val-green { font-size: 1.85rem; font-weight: 800; color: #34d399; line-height: 1.2; }
-    .kpi-val-white { font-size: 1.85rem; font-weight: 800; color: #ffffff; line-height: 1.2; }
-    .kpi-val-purple { font-size: 1.85rem; font-weight: 800; color: #c084fc; line-height: 1.2; }
-    .kpi-val-amber { font-size: 1.85rem; font-weight: 800; color: #fbbf24; line-height: 1.2; }
-    .kpi-val-blue { font-size: 1.85rem; font-weight: 800; color: #60a5fa; line-height: 1.2; }
-    .kpi-sub { font-size: 0.74rem; color: #94a3b8; margin-top: 4px; }
+    .badge-pill { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+    .badge-green { background-color: #052e16 !important; color: #34d399 !important; border: 1px solid #166534 !important; }
+    .badge-blue { background-color: #172554 !important; color: #60a5fa !important; border: 1px solid #1e40af !important; }
+    .badge-purple { background-color: #3b0764 !important; color: #c084fc !important; border: 1px solid #6b21a8 !important; }
+    .badge-amber { background-color: #451a03 !important; color: #fbbf24 !important; border: 1px solid #92400e !important; }
+    .badge-red { background-color: #450a0a !important; color: #f87171 !important; border: 1px solid #991b1b !important; }
 
-    /* 5. Strategic Priority Cards */
     .strategic-card-amber {
-        background: linear-gradient(135deg, rgba(69, 26, 3, 0.45) 0%, #0f172a 100%);
-        border: 1px solid rgba(245, 158, 11, 0.45);
-        border-left: 4px solid #f59e0b;
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(69, 26, 3, 0.45) 0%, #0f172a 100%) !important;
+        border: 1px solid rgba(245, 158, 11, 0.45) !important; border-left: 4px solid #f59e0b !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
     .strategic-card-green {
-        background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, #0f172a 100%);
-        border: 1px solid rgba(16, 185, 129, 0.45);
-        border-left: 4px solid #10b981;
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, #0f172a 100%) !important;
+        border: 1px solid rgba(16, 185, 129, 0.45) !important; border-left: 4px solid #10b981 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
     .strategic-card-blue {
-        background: linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, #0f172a 100%);
-        border: 1px solid rgba(59, 130, 246, 0.45);
-        border-left: 4px solid #3b82f6;
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, #0f172a 100%) !important;
+        border: 1px solid rgba(59, 130, 246, 0.45) !important; border-left: 4px solid #3b82f6 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
     .strategic-card-red {
-        background: linear-gradient(135deg, rgba(69, 10, 10, 0.45) 0%, #0f172a 100%);
-        border: 1px solid rgba(239, 68, 68, 0.45);
-        border-left: 4px solid #ef4444;
+        background: linear-gradient(135deg, rgba(69, 10, 10, 0.45) 0%, #0f172a 100%) !important;
+        border: 1px solid rgba(239, 68, 68, 0.45) !important; border-left: 4px solid #ef4444 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .strategic-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .strategic-body { font-size: 0.8rem; color: #cbd5e1 !important; line-height: 1.55; }
+    .gauge-track { width: 100%; background-color: #1e293b !important; height: 7px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+
+    div[data-baseweb="input"] { background-color: #0b1120 !important; border: 1px solid #334155 !important; border-radius: 6px !important; }
+    div[data-baseweb="input"] input { color: #f8fafc !important; }
+    div[data-baseweb="input"] button { color: #94a3b8 !important; }
+    div[data-baseweb="select"] { background-color: #0b1120 !important; border: 1px solid #334155 !important; border-radius: 6px !important; }
+    div[data-baseweb="select"] * { color: #f8fafc !important; }
+    div[data-testid="stRadio"] label span { color: #cbd5e1 !important; font-size: 0.82rem !important; }
+    div[data-testid="stRadio"] > label { color: #94a3b8 !important; font-size: 0.72rem !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+    button[kind="secondary"] { background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
+    button[kind="secondary"]:hover { background-color: #334155 !important; color: #ffffff !important; }
+    button[kind="primary"] { background-color: #2563eb !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; }
+    button[kind="primary"]:hover { background-color: #3b82f6 !important; }
+    button[data-baseweb="tab"] { color: #94a3b8 !important; }
+    button[data-baseweb="tab"][aria-selected="true"] { color: #60a5fa !important; border-bottom: 2px solid #3b82f6 !important; }
+    div[data-testid="stDataFrame"] { border: 1px solid #1e293b !important; }
+    """
+else:
+    theme_css = """
+    :root {
+        --bg-main: #f8fafc;
+        --bg-sidebar: #ffffff;
+        --bg-card: #ffffff;
+        --bg-card-subtle: #f1f5f9;
+        --border-color: #e2e8f0;
+        --border-hover: #cbd5e1;
+        --text-title: #0f172a;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --text-sub: #334155;
+        --gauge-track: #e2e8f0;
+        --input-bg: #ffffff;
+        --input-border: #cbd5e1;
+    }
+    .stApp {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #e2e8f0 !important;
+    }
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] p {
+        color: #334155 !important;
+    }
+    header[data-testid="stHeader"] {
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(8px) !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    .kpi-card, .gauge-card {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 12px;
         padding: 16px 18px;
-        margin-bottom: 14px;
-    }
-    .strategic-title {
-        font-size: 0.82rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
-    }
-    .strategic-body {
-        font-size: 0.8rem;
-        color: #cbd5e1;
-        line-height: 1.55;
-    }
-
-    /* 6. Real-Time Gauge Boxes */
-    .gauge-card {
-        background-color: #0f172a;
-        border: 1px solid #1e293b;
-        border-radius: 12px;
-        padding: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         margin-bottom: 12px;
+        color: #0f172a !important;
     }
-    .gauge-header {
+    .kpi-card:hover, .gauge-card:hover {
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    }
+    .kpi-header, .gauge-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 6px;
     }
-    .gauge-title {
+    .kpi-label, .gauge-title {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #94a3b8;
+        color: #64748b !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-    .gauge-value {
-        font-size: 1.45rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin-top: 4px;
-    }
-    .gauge-sub {
-        font-size: 0.72rem;
-        color: #94a3b8;
-        margin-top: 2px;
-    }
-    .gauge-track {
-        width: 100%;
-        background-color: #1e293b;
-        height: 7px;
-        border-radius: 4px;
-        margin-top: 10px;
-        overflow: hidden;
-    }
+    .kpi-val-green { font-size: 1.85rem; font-weight: 800; color: #059669 !important; line-height: 1.2; }
+    .kpi-val-white { font-size: 1.85rem; font-weight: 800; color: #0f172a !important; line-height: 1.2; }
+    .kpi-val-purple { font-size: 1.85rem; font-weight: 800; color: #7c3aed !important; line-height: 1.2; }
+    .kpi-val-amber { font-size: 1.85rem; font-weight: 800; color: #d97706 !important; line-height: 1.2; }
+    .kpi-val-blue { font-size: 1.85rem; font-weight: 800; color: #2563eb !important; line-height: 1.2; }
+    .gauge-value { font-size: 1.45rem; font-weight: 800; color: #0f172a !important; margin-top: 4px; }
+    .kpi-sub, .gauge-sub { font-size: 0.74rem; color: #64748b !important; margin-top: 4px; }
 
-    /* 7. Input Controls Dark Theme Overrides */
-    div[data-baseweb="input"] {
-        background-color: #0b1120 !important;
-        border: 1px solid #334155 !important;
-        border-radius: 6px !important;
-    }
-    div[data-baseweb="input"] input {
-        color: #f8fafc !important;
-        font-size: 0.85rem !important;
-    }
-    div[data-baseweb="input"]:focus-within {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 1px #3b82f6 !important;
-    }
-    div[data-baseweb="select"] {
-        background-color: #0b1120 !important;
-        border: 1px solid #334155 !important;
-        border-radius: 6px !important;
-    }
-    div[data-baseweb="select"] * {
-        color: #f8fafc !important;
-    }
+    .badge-pill { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+    .badge-green { background-color: #dcfce7 !important; color: #15803d !important; border: 1px solid #86efac !important; }
+    .badge-blue { background-color: #dbeafe !important; color: #1d4ed8 !important; border: 1px solid #93c5fd !important; }
+    .badge-purple { background-color: #f3e8ff !important; color: #7e22ce !important; border: 1px solid #d8b4fe !important; }
+    .badge-amber { background-color: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fcd34d !important; }
+    .badge-red { background-color: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #fca5a5 !important; }
 
-    /* 8. Buttons */
-    button[kind="secondary"] {
-        background-color: #1e293b !important;
-        color: #f8fafc !important;
-        border: 1px solid #334155 !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-size: 0.82rem !important;
-        padding: 0.45rem 1rem !important;
+    .strategic-card-amber {
+        background: #fffbeb !important; border: 1px solid #fde68a !important; border-left: 4px solid #f59e0b !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
-    button[kind="secondary"]:hover {
-        background-color: #334155 !important;
-        border-color: #475569 !important;
-        color: #ffffff !important;
+    .strategic-card-green {
+        background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; border-left: 4px solid #10b981 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
-    button[kind="primary"] {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-size: 0.82rem !important;
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4) !important;
+    .strategic-card-blue {
+        background: #eff6ff !important; border: 1px solid #bfdbfe !important; border-left: 4px solid #3b82f6 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
-    button[kind="primary"]:hover {
-        background-color: #3b82f6 !important;
+    .strategic-card-red {
+        background: #fef2f2 !important; border: 1px solid #fecaca !important; border-left: 4px solid #ef4444 !important;
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
     }
+    .strategic-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .strategic-body { font-size: 0.8rem; color: #334155 !important; line-height: 1.55; }
+    .gauge-track { width: 100%; background-color: #e2e8f0 !important; height: 7px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
 
-    /* 9. Tabs */
-    button[data-baseweb="tab"] {
-        color: #94a3b8 !important;
-        font-weight: 600 !important;
-        background: transparent !important;
-        border: none !important;
-        font-size: 0.85rem !important;
-    }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #60a5fa !important;
-        border-bottom: 2px solid #3b82f6 !important;
-    }
+    div[data-baseweb="input"] { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 6px !important; }
+    div[data-baseweb="input"] input { color: #0f172a !important; }
+    div[data-baseweb="input"] button { color: #64748b !important; }
+    div[data-baseweb="select"] { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 6px !important; }
+    div[data-baseweb="select"] * { color: #0f172a !important; }
+    div[data-testid="stRadio"] label span { color: #1e293b !important; font-size: 0.82rem !important; }
+    div[data-testid="stRadio"] > label { color: #64748b !important; font-size: 0.72rem !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+    button[kind="secondary"] { background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; }
+    button[kind="secondary"]:hover { background-color: #e2e8f0 !important; color: #0f172a !important; }
+    button[kind="primary"] { background-color: #2563eb !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; }
+    button[kind="primary"]:hover { background-color: #3b82f6 !important; }
+    button[data-baseweb="tab"] { color: #64748b !important; }
+    button[data-baseweb="tab"][aria-selected="true"] { color: #2563eb !important; border-bottom: 2px solid #2563eb !important; }
+    div[data-testid="stDataFrame"] { border: 1px solid #e2e8f0 !important; }
+    """
 
-    /* 10. Dataframe / Table Dark */
-    div[data-testid="stDataFrame"] {
-        border: 1px solid #1e293b !important;
-        border-radius: 8px !important;
-        background-color: #0f172a !important;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.markdown(f"<style>{theme_css}</style>", unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------------------------------------
-# Função de Tema Escuro para Gráficos Plotly
+# Função de Tema Dinâmico para Gráficos Plotly
 # ----------------------------------------------------------------------------------------
-def apply_dark_theme(fig: go.Figure, height: int = 300, title: str = "") -> go.Figure:
+def apply_theme(fig: go.Figure, is_dark: bool = True, height: int = 300, title: str = "") -> go.Figure:
+    paper_bg = "#0f172a" if is_dark else "#ffffff"
+    grid_color = "#1e293b" if is_dark else "#e2e8f0"
+    text_color = "#94a3b8" if is_dark else "#64748b"
+    title_color = "#f8fafc" if is_dark else "#0f172a"
+
     fig.update_layout(
-        title=dict(text=title, font=dict(color="#f8fafc", size=13, family="system-ui")),
-        paper_bgcolor="#0f172a",
+        title=dict(text=title, font=dict(color=title_color, size=13, family="system-ui")),
+        paper_bgcolor=paper_bg,
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#94a3b8", family="system-ui, -apple-system, sans-serif"),
+        font=dict(color=text_color, family="system-ui, -apple-system, sans-serif"),
         height=height,
         margin=dict(l=20, r=20, t=40, b=25),
-        xaxis=dict(gridcolor="#1e293b", zerolinecolor="#334155", color="#94a3b8"),
-        yaxis=dict(gridcolor="#1e293b", zerolinecolor="#334155", color="#94a3b8"),
-        legend=dict(font=dict(color="#cbd5e1")),
+        xaxis=dict(gridcolor=grid_color, zerolinecolor=grid_color, color=text_color),
+        yaxis=dict(gridcolor=grid_color, zerolinecolor=grid_color, color=text_color),
+        legend=dict(font=dict(color=text_color)),
     )
     return fig
 
@@ -397,17 +395,29 @@ df_comp = companies_frame(last_quarter)
 with st.sidebar:
     # Header com Logótipo GMC
     st.markdown("""
-    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #1e293b; margin-bottom: 16px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 14px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 32px; height: 32px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 13px; box-shadow: 0 4px 10px rgba(37,99,235,0.4);">GMC</div>
             <div>
-                <div style="font-weight: 800; font-size: 14px; color: #ffffff; line-height: 1.1;">GMC Enterprise</div>
-                <div style="font-size: 10px; color: #94a3b8; font-weight: 500;">Plataforma de Gestão 360º</div>
+                <div style="font-weight: 800; font-size: 14px; color: var(--text-title); line-height: 1.1;">GMC Enterprise</div>
+                <div style="font-size: 10px; color: var(--text-muted); font-weight: 500;">Plataforma de Gestão 360º</div>
             </div>
         </div>
         <span class="badge-pill badge-green">Y15Q2</span>
     </div>
     """, unsafe_allow_html=True)
+
+    # Seletor de Tema Visual Dinâmico
+    st.radio(
+        "TEMA",
+        options=["🌙 Modo Escuro", "☀️ Modo Claro"],
+        index=0 if is_dark else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="theme_radio",
+    )
+
+    st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
 
     menu = st.radio(
         "COCKPIT & DECISÕES",
@@ -429,8 +439,8 @@ with st.sidebar:
     
     # Rodapé da Barra Lateral com Dados da Empresa 1
     st.markdown(f"""
-    <div style="background-color: #090d16; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; font-size: 11px; color: #94a3b8;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span>Empresa:</span> <strong style="color: #ffffff;">Nº 1 (Grupo {last_quarter.group.get('group_no', 0)})</strong></div>
+    <div style="background-color: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 11px; color: var(--text-muted);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span>Empresa:</span> <strong style="color: var(--text-title);">Nº 1 (Grupo {last_quarter.group.get('group_no', 0)})</strong></div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span>Cotação Atual:</span> <strong style="color: #34d399;">111.32 €</strong></div>
         <div style="display: flex; justify-content: space-between;"><span>Decisão Alvo:</span> <span style="color: #60a5fa; font-weight: 700;">Y15Q2 (1º Competição)</span></div>
     </div>
@@ -443,11 +453,11 @@ with st.sidebar:
 if menu == "🏢 Visão Executiva & KPIs":
     # Top App Bar
     st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 14px; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">Cockpit Executivo & Scorecard</span>
-            <span style="color: #475569;">|</span>
-            <span style="font-size: 12px; color: #94a3b8;">Global Management Challenge 2026/2027</span>
+            <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase; letter-spacing: 0.5px;">Cockpit Executivo & Scorecard</span>
+            <span style="color: var(--text-muted);">|</span>
+            <span style="font-size: 12px; color: var(--text-muted);">Global Management Challenge 2026/2027</span>
         </div>
         <span class="badge-pill badge-blue">Y15Q1 Fechado</span>
     </div>
@@ -560,7 +570,7 @@ if menu == "🏢 Visão Executiva & KPIs":
             line=dict(color="#10b981", width=3), mode="lines+markers",
             marker=dict(size=7, color="#10b981"),
         ))
-        apply_dark_theme(fig_fin, height=310, title="Trajetória Financeira (Y14Q1 - Y15Q1)")
+        apply_theme(fig_fin, is_dark=is_dark, height=310, title="Trajetória Financeira (Y14Q1 - Y15Q1)")
         st.plotly_chart(fig_fin, width="stretch")
 
     with g_col2:
@@ -571,14 +581,14 @@ if menu == "🏢 Visão Executiva & KPIs":
             marker=dict(size=8, color="#34d399"),
             text=[f"{v:.2f}" for v in df_kpi["Cotação"]],
             textposition="top center",
-            textfont=dict(color="#f8fafc", size=10),
+            textfont=dict(color="#f8fafc" if is_dark else "#0f172a", size=10),
         ))
-        apply_dark_theme(fig_share, height=310, title="Cotação da Ação em Bolsa (Share Price)")
+        apply_theme(fig_share, is_dark=is_dark, height=310, title="Cotação da Ação em Bolsa (Share Price)")
         st.plotly_chart(fig_share, width="stretch")
 
     # 4. Análise DuPont e Rentabilidade
     st.markdown("""
-    <div style="font-size: 13px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-top: 10px; margin-bottom: 10px;">
+    <div style="font-size: 13px; font-weight: 700; color: var(--text-title); text-transform: uppercase; margin-top: 10px; margin-bottom: 10px;">
         🔬 Decomposição DuPont do ROE (Y15Q1)
     </div>
     """, unsafe_allow_html=True)
@@ -629,11 +639,11 @@ if menu == "🏢 Visão Executiva & KPIs":
 # ========================================================================================
 elif menu == "🎯 Simulador de Decisões Y15Q2":
     st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 14px; margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 16px;">
         <div>
-            <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">Simulador de Decisões Estratégicas</span>
-            <span style="color: #475569; margin: 0 8px;">|</span>
-            <span style="font-size: 12px; color: #94a3b8;">Y15Q2 - Ciclo de Competição Ativo</span>
+            <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase; letter-spacing: 0.5px;">Simulador de Decisões Estratégicas</span>
+            <span style="color: var(--text-muted); margin: 0 8px;">|</span>
+            <span style="font-size: 12px; color: var(--text-muted);">Y15Q2 - Ciclo de Competição Ativo</span>
         </div>
         <span class="badge-pill badge-green">Restrições em Tempo Real</span>
     </div>
@@ -646,11 +656,11 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     # 1. Preset Scenarios Selector (Idêntico ao painel de botões do HTML)
     st.markdown("""
-    <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
+    <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
-                <div style="font-size: 13px; font-weight: 700; color: #ffffff;">🎮 Motor de Decisão com 3 Cenários Pré-Configurados</div>
-                <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Selecione uma estratégia e o simulador recalcula automaticamente todas as restrições fabris e projeções financeiras.</div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-title);">🎮 Motor de Decisão com 3 Cenários Pré-Configurados</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Selecione uma estratégia e o simulador recalcula automaticamente todas as restrições fabris e projeções financeiras.</div>
             </div>
         </div>
     </div>
@@ -768,12 +778,12 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
         for a in criticals:
             st.markdown(f"""
             <div class="strategic-card-red">
-                <div class="strategic-title" style="color: #f87171;">🚨 [{a.category}] {a.title}</div>
+                <div class="strategic-title" style="color: {'#f87171' if is_dark else '#dc2626'};">🚨 [{a.category}] {a.title}</div>
                 <div class="strategic-body">
                     {a.message}<br>
                     <strong>Causa:</strong> {a.reason}<br>
                     <strong>Impacto:</strong> {a.impact}<br>
-                    <strong>Ação Corretiva Obrigatória:</strong> <span style="color: #fca5a5; font-weight: 700;">{a.suggested_action}</span>
+                    <strong>Ação Corretiva Obrigatória:</strong> <span style="color: {'#fca5a5' if is_dark else '#b91c1c'}; font-weight: 700;">{a.suggested_action}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -782,7 +792,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
             for a in warnings:
                 st.markdown(f"""
                 <div class="strategic-card-amber">
-                    <div class="strategic-title" style="color: #fbbf24;">⚠️ [{a.category}] {a.title}</div>
+                    <div class="strategic-title" style="color: {'#fbbf24' if is_dark else '#d97706'};">⚠️ [{a.category}] {a.title}</div>
                     <div class="strategic-body">{a.message}<br><strong>Sugestão:</strong> {a.suggested_action}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -791,7 +801,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     # 4. Grelha de Decisão em 3 Colunas (Fiel a plataforma_gestao_gmc.html)
     st.markdown("""
-    <div style="font-size: 13px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 10px;">
+    <div style="font-size: 13px; font-weight: 700; color: var(--text-title); text-transform: uppercase; margin-bottom: 10px;">
         ⚙️ Grelha Oficial de Parâmetros de Decisão (Y15Q2)
     </div>
     """, unsafe_allow_html=True)
@@ -800,7 +810,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     with col_inp1:
         st.markdown("""
-        <div style="border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 10px;">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">
             <span style="font-size: 11px; font-weight: 700; color: #60a5fa; text-transform: uppercase;">1. Entregas & Vendas</span>
         </div>
         """, unsafe_allow_html=True)
@@ -835,7 +845,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     with col_inp2:
         st.markdown("""
-        <div style="border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 10px;">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">
             <span style="font-size: 11px; font-weight: 700; color: #fbbf24; text-transform: uppercase;">2. Matéria-Prima & Produção</span>
         </div>
         """, unsafe_allow_html=True)
@@ -868,7 +878,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     with col_inp3:
         st.markdown("""
-        <div style="border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 10px;">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">
             <span style="font-size: 11px; font-weight: 700; color: #34d399; text-transform: uppercase;">3. Qualidade, RH & Tesouraria</span>
         </div>
         """, unsafe_allow_html=True)
@@ -897,7 +907,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     # 5. Demonstração de Resultados Projetada Detalhada
     st.markdown("""
-    <div style="font-size: 13px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 8px;">
+    <div style="font-size: 13px; font-weight: 700; color: var(--text-title); text-transform: uppercase; margin-bottom: 8px;">
         📑 Demonstração de Resultados (DRE) Projetada para Y15Q2
     </div>
     """, unsafe_allow_html=True)
@@ -906,7 +916,7 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 
     # 6. Folha Oficial de Decisão (Pronta para Submissão)
     st.markdown("""
-    <div style="font-size: 13px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-top: 14px; margin-bottom: 8px;">
+    <div style="font-size: 13px; font-weight: 700; color: var(--text-title); text-transform: uppercase; margin-top: 14px; margin-bottom: 8px;">
         📋 Folha Oficial de Decisão GMC (Y15Q2)
     </div>
     """, unsafe_allow_html=True)
@@ -934,8 +944,8 @@ elif menu == "🎯 Simulador de Decisões Y15Q2":
 # ========================================================================================
 elif menu == "📈 Marketing & Vendas":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Marketing, Canais & Análise de Preços</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Marketing, Canais & Análise de Preços</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -945,7 +955,7 @@ elif menu == "📈 Marketing & Vendas":
         x="Produto", y="Receita", color="Mercado", barmode="group",
         color_discrete_map={"UE": "#3b82f6", "Nafta": "#10b981", "Internet": "#a855f7"},
     )
-    apply_dark_theme(fig_mkt, height=320, title="Receita por Produto e Canal de Venda (Y15Q1)")
+    apply_theme(fig_mkt, is_dark=is_dark, height=320, title="Receita por Produto e Canal de Venda (Y15Q1)")
     st.plotly_chart(fig_mkt, width="stretch")
 
     st.dataframe(df_prod_mkt[df_prod_mkt["Trimestre"] == last_quarter.label], width="stretch")
@@ -956,8 +966,8 @@ elif menu == "📈 Marketing & Vendas":
 # ========================================================================================
 elif menu == "🏭 Produção & Supply Chain":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Produção, Capacidade de Máquinas & Supply Chain</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Produção, Capacidade de Máquinas & Supply Chain</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1001,8 +1011,8 @@ elif menu == "🏭 Produção & Supply Chain":
 # ========================================================================================
 elif menu == "👥 Recursos Humanos":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Recursos Humanos & Capacidade de Montagem</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Recursos Humanos & Capacidade de Montagem</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1032,9 +1042,9 @@ elif menu == "👥 Recursos Humanos":
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("""
+    st.markdown(f"""
     <div class="strategic-card-blue">
-        <div class="strategic-title" style="color: #60a5fa;">💡 Solução de Engenharia para os 21 Operários:</div>
+        <div class="strategic-title" style="color: {'#60a5fa' if is_dark else '#2563eb'};">💡 Solução de Engenharia para os 21 Operários:</div>
         <div class="strategic-body">
             Com a entrada dos 4 novos operários qualificados, elevar os tempos de montagem para <strong>120 min no P1, 165 min no P2 e 320 min no P3</strong> absorve exatamente as 8.820 horas normais disponíveis sem gerar custos de horas ociosas e disparando a qualidade técnica (estrelas).
         </div>
@@ -1047,8 +1057,8 @@ elif menu == "👥 Recursos Humanos":
 # ========================================================================================
 elif menu == "💰 Finanças & Balanço":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Finanças, Balanço & Otimização de Tesouraria</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Finanças, Balanço & Otimização de Tesouraria</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1082,8 +1092,8 @@ elif menu == "💰 Finanças & Balanço":
 # ========================================================================================
 elif menu == "📜 Arquivo Histórico (5Q)":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Arquivo Histórico Completo da Empresa 1 (Y14Q1 - Y15Q1)</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Arquivo Histórico Completo da Empresa 1 (Y14Q1 - Y15Q1)</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1095,8 +1105,8 @@ elif menu == "📜 Arquivo Histórico (5Q)":
 # ========================================================================================
 elif menu == "👥 Inteligência Competitiva (Grupo)":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Benchmark Competitivo - Comparativo das 8 Empresas do Grupo</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Benchmark Competitivo - Comparativo das 8 Empresas do Grupo</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1105,11 +1115,12 @@ elif menu == "👥 Inteligência Competitiva (Grupo)":
         x="Empresa", y="Cotação", text_auto=".2f",
         color="Cotação", color_continuous_scale="Blues",
     )
-    apply_dark_theme(fig_bench, height=330, title="Cotação da Ação por Empresa no Grupo (Y15Q1)")
+    apply_theme(fig_bench, is_dark=is_dark, height=330, title="Cotação da Ação por Empresa no Grupo (Y15Q1)")
     st.plotly_chart(fig_bench, width="stretch")
 
+    highlight_color = "#1e3a8a" if is_dark else "#dbeafe"
     st.dataframe(
-        df_comp[["Cotação", "Desempenho Inv.", "Capitais Próprios", "Caixa", "Financiamentos", "Publicidade", "I&D", "Empregados", "★ P1", "★ P2", "★ P3"]].style.highlight_max(axis=0, color="#1e3a8a"),
+        df_comp[["Cotação", "Desempenho Inv.", "Capitais Próprios", "Caixa", "Financiamentos", "Publicidade", "I&D", "Empregados", "★ P1", "★ P2", "★ P3"]].style.highlight_max(axis=0, color=highlight_color),
         width="stretch",
     )
 
@@ -1119,8 +1130,8 @@ elif menu == "👥 Inteligência Competitiva (Grupo)":
 # ========================================================================================
 elif menu == "📚 Parâmetros Oficiais GMC":
     st.markdown("""
-    <div style="border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 16px;">
-        <span style="font-size: 14px; font-weight: 800; color: #ffffff; text-transform: uppercase;">Parâmetros Oficiais e Tabelas de Referência GMC</span>
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <span style="font-size: 14px; font-weight: 800; color: var(--text-title); text-transform: uppercase;">Parâmetros Oficiais e Tabelas de Referência GMC</span>
     </div>
     """, unsafe_allow_html=True)
 
