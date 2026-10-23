@@ -94,13 +94,22 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------------------
-# Gestão de Tema (Modo Escuro / Modo Claro Dinâmico)
+# Gestão de Tema Nativo do Streamlit (Sincronizado automaticamente via menu nativo)
 # ----------------------------------------------------------------------------------------
-if "theme_radio" in st.session_state:
-    is_dark = "Escuro" in st.session_state["theme_radio"]
-    st.session_state["theme"] = "Escuro" if is_dark else "Claro"
+try:
+    from streamlit_theme import st_theme
+    active_theme = st_theme()
+except Exception:
+    active_theme = None
+
+if active_theme and "base" in active_theme:
+    is_dark = active_theme["base"] == "dark"
+    st.session_state["is_dark"] = is_dark
+elif "is_dark" in st.session_state:
+    is_dark = st.session_state["is_dark"]
 else:
-    is_dark = st.session_state.get("theme", "Escuro") == "Escuro"
+    # Padrão: Modo Escuro Executivo (Design System oficial GMC)
+    is_dark = True
 
 if is_dark:
     theme_css = """
@@ -406,18 +415,6 @@ with st.sidebar:
         <span class="badge-pill badge-green">Y15Q2</span>
     </div>
     """, unsafe_allow_html=True)
-
-    # Seletor de Tema Visual Dinâmico
-    st.radio(
-        "TEMA",
-        options=["🌙 Modo Escuro", "☀️ Modo Claro"],
-        index=0 if is_dark else 1,
-        horizontal=True,
-        label_visibility="collapsed",
-        key="theme_radio",
-    )
-
-    st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
 
     menu = st.radio(
         "COCKPIT & DECISÕES",
