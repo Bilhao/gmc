@@ -65,3 +65,4 @@ Aceda no seu browser em: **`http://localhost:8501`**
 
 ## 👥 Autores
 Equipa Empresa 1 — Global Management Challenge 2026/2027
+
